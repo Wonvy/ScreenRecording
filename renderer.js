@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pressedKeys.delete(keyText);
       }
       console.log(pressedKeys);
+      
 
 
     }
