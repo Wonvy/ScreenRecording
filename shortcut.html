@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>快捷键显示</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    #drag-area {
+      height: 20px;
+      background-color: rgba(50, 50, 50, 0.5);
+      -webkit-app-region: drag;
+    }
+
+    #shortcut-display {
+      padding: 10px;
+      font-size: 18px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="drag-area"></div>
+  <div id="shortcut-display"></div>
+  <script src="shortcut.js"></script>
+</body>
+
+</html>

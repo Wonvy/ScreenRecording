@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   ipcRenderer.on('key-event', (event, data) => {  // 监听来自主进程的'key-event'事件
-    console.log('接收到键盘事件:', data);  // 在控制台输出接收到的键盘事件数据
+    // console.log('接收到键盘事件:', data);  // 在控制台输出接收到的键盘事件数据
     if (keyList) {  // 如果keyList元素存在
       const li = document.createElement('li');  // 创建一个新的列表项元素
       const timestamp = new Date(data.timestamp).toLocaleString('zh-CN', {
@@ -43,9 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
       });  // 将时间戳转换为本地时间字符串，包括毫秒
       let keyText = data.key.toUpperCase();  // 将按键名称转换为大写
 
-
-
-
       if (data.ctrlKey || data.altKey || data.metaKey || data.shiftKey) {  // 如果有修饰键被按下
         let combination = [];  // 创建一个数组来存储组合键
         if (data.ctrlKey) combination.push('Ctrl');  // 如果Ctrl键被按下，添加到组合键数组
@@ -54,15 +51,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.shiftKey) combination.push('Shift');  // 如果Shift键被按下，添加到组合键数组
         combination.push(keyText);  // 将主按键添加到组合键数组
         keyText = combination.join('+');  // 将组合键数组用'+'连接成字符串
-        console.log("组合键",keyText);
+        // console.log("组合键",keyText);
       }
-      // console.log("data.isKeyDown",data.isKeyDown);
+      // console.log("data.isKeyDown",data);
 
+      // 获取按键状态
       const actionText = getActionText(data.isKeyDown, data.key);
 
-
-
-      
       if (actionText === '按下') {
         // 检查按键是否已经在pressedKeys集合中，避免重复显示
         if (!pressedKeys.has(keyText)) {
@@ -77,10 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       console.log(pressedKeys);
 
-      // 保持列表中只显示最近的10个按键事件
-      // if (keyList.children.length > 10) {  // 如果列表项超过10个
-      //   keyList.removeChild(keyList.lastChild);  // 删除最后一个列表项
-      // }
+      // 发送事件到主进程
+      ipcRenderer.send('key-event', pressedKeys);
     }
   });
 

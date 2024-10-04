@@ -1,9 +1,10 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
 const path = require('path');
 const { GlobalKeyboardListener } = require("node-global-key-listener");
 
 let mainWindow;
 let keyboardListener;
+let shortcutWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -16,7 +17,32 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
-  mainWindow.webContents.openDevTools();
+
+  // 创建快捷键显示窗口
+  shortcutWindow = new BrowserWindow({
+    width: 300,
+    height: 100,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+  });
+
+  shortcutWindow.loadFile('shortcut.html');
+  
+  // 移除这行，允许鼠标事件
+  // shortcutWindow.setIgnoreMouseEvents(true);
+
+  // 当主窗口关闭时，关闭所有窗口
+  mainWindow.on('closed', () => {
+    if (shortcutWindow) {
+      shortcutWindow.close();
+    }
+    app.quit();
+  });
 }
 
 app.whenReady().then(createWindow);
@@ -50,6 +76,10 @@ ipcMain.on('stop-listening', () => {
     keyboardListener.kill();
     keyboardListener = null;
   }
+});
+
+ipcMain.on('key-event', (event, data) => {
+  shortcutWindow.webContents.send('update-shortcut', data);
 });
 
 function sendKeyEvent(e, isKeyDown) {
