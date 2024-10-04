@@ -7,14 +7,19 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      font-family: Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+      overflow: hidden;
+      background-color: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     #drag-area {
-      height: 20px;
-      background-color: rgba(50, 50, 50, 0.5);
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
       -webkit-app-region: drag;
     }
 
@@ -22,6 +27,30 @@
       padding: 10px;
       font-size: 18px;
       text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .key {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333333;
+      border-radius: 4px;
+      padding: 5px 10px;
+      margin: 0 5px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      text-shadow: 0 1px 0 #fff;
+      font-weight: bold;
+      min-width: 30px;
+      border: 1px solid #d1d1d1;
+      background-image: linear-gradient(to bottom, rgba(247,247,247,0.8), rgba(224,224,224,0.8));
+      cursor: move;
+      user-select: none;
+      -webkit-user-select: none;
     }
   </style>
 </head>

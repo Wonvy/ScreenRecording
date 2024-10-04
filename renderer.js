@@ -59,12 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const actionText = getActionText(data.isKeyDown, data.key);
 
       if (actionText === '按下') {
+        
         // 检查按键是否已经在pressedKeys集合中，避免重复显示
         if (!pressedKeys.has(keyText)) {
           li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
           keyList.prepend(li);  // 将新的列表项添加到列表的开头
         }
         pressedKeys.add(keyText);
+       
+        ipcRenderer.send('key-event', pressedKeys); // 发送事件到主进程
+        
+       
       } else {
         li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
         keyList.prepend(li);  // 将新的列表项添加到列表的开头
@@ -72,8 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       console.log(pressedKeys);
 
-      // 发送事件到主进程
-      ipcRenderer.send('key-event', pressedKeys);
+
     }
   });
 
