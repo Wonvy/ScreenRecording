@@ -9,7 +9,7 @@
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
       overflow: hidden;
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
@@ -62,9 +62,9 @@
 
     #mouse-outline {
       width: 60px;
-      height: 100px;  /* 增加高度以容纳滚轮上下滑动区域 */
+      height: 80px;  /* 增加高度以容纳滚轮上下滑动区域 */
       border: 2px solid #fff;
-      border-radius: 24px;
+      border-radius: 26px;
       position: absolute;
       left: 50%;
       top: 50%;
@@ -82,13 +82,13 @@
     #left-button {
       left: -2px;
       top: -2px;
-      border-radius: 24px 0 0 0;
+      border-radius: 26px 0 0 0;
     }
 
     #right-button {
       right: -2px;
       top: -2px;
-      border-radius: 0 24px 0 0;
+      border-radius: 0 26px 0 0;
     }
 
     #scroll-wheel {
@@ -105,7 +105,8 @@
 
     #scroll-up, #scroll-down {
       width: 10px;
-      height: 10px;
+      height: 20px;
+      border-radius: 5px;
       background-color: transparent;
       position: absolute;
       left: 50%;
@@ -125,8 +126,7 @@
     }
 
     .pressed {
-      background-color: #fff;
-      transform: scale(0.9);
+      background: linear-gradient(to bottom, #fff, transparent);
     }
 
     .released {
@@ -138,8 +138,12 @@
       transform: translateX(-50%) scale(0.8);
     }
 
-    #scroll-up.pressed, #scroll-down.pressed {
-      background-color: #fff;
+    #scroll-up.pressed {
+     background: linear-gradient(to bottom, #00ff00, transparent);
+    }
+
+    #scroll-down.pressed {
+     background: linear-gradient(to top, #00ff00, transparent);
     }
 
     #shortcut-description {
@@ -171,9 +175,11 @@
     <div id="mouse-outline">
       <div id="left-button" class="mouse-button"></div>
       <div id="right-button" class="mouse-button"></div>
-      <div id="scroll-wheel"></div>
-      <div id="scroll-up"></div>
-      <div id="scroll-down"></div>
+      <div id="scroll-wheel">
+        <div id="scroll-up"></div>
+        <div id="scroll-down"></div>
+      </div>
+
     </div>
   </div>
   <script src="shortcut.js"></script>

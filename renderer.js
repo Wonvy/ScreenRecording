@@ -1,4 +1,4 @@
-const { ipcRenderer } = require('electron');
+const { ipcRenderer} = require('electron');
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
        
       } else {
+
         li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
         keyList.prepend(li);  // 将新的列表项添加到列表的开头
         pressedKeys.delete(keyText); // 从集合中删除按键
@@ -86,6 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
   });
+
+
 
 
   // 监听鼠标事件

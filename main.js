@@ -10,7 +10,7 @@ let shortcutWindow;
 // 创建主窗口
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
+    width: 400,
     height: 600,
     webPreferences: {
       nodeIntegration: true,
@@ -190,6 +190,7 @@ function sendMouseWheelEvent(e) {
   // mainWindow.webContents.send('mouse-wheel-event', mouseWheelEvent);
   shortcutWindow.webContents.send('mouse-wheel-event', mouseWheelEvent); // 直接发送到shortcut窗口
 }
+
 
 // 注销所有快捷键
 app.on('will-quit', () => {
