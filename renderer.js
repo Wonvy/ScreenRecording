@@ -3,22 +3,22 @@ const { ipcRenderer} = require('electron');
 
 document.addEventListener('DOMContentLoaded', () => {
   const keyList = document.getElementById('keyList');
-  const startBtn = document.getElementById('startBtn');
-  const stopBtn = document.getElementById('stopBtn');
+  const toggleBtn = document.getElementById('toggleBtn');
+  let isListening = false;
 
-  // 开始监听
-  if (startBtn) {
-    startBtn.addEventListener('click', () => {
-      console.log('点击了开始监听按钮');
-      ipcRenderer.send('start-listening');
-    });
-  }
-
-  // 停止监听
-  if (stopBtn) {
-    stopBtn.addEventListener('click', () => {
-      console.log('点击了停止监听按钮');
-      ipcRenderer.send('stop-listening');
+  // 切换监听状态
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      isListening = !isListening;
+      if (isListening) {
+        console.log('开始监听');
+        ipcRenderer.send('start-listening');
+        toggleBtn.classList.add('active');
+      } else {
+        console.log('停止监听');
+        ipcRenderer.send('stop-listening');
+        toggleBtn.classList.remove('active');
+      }
     });
   }
 
