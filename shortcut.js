@@ -40,6 +40,7 @@ ipcRenderer.on('update-shortcut', (event, data) => {
   if (data.size === 0) {
     console.log("快捷键集合为空");
     shortcutDisplay.innerHTML = '';
+    shortcutDescription.textContent = ''; // 清空描述
   } else {
     const pressedKeys = Array.from(data).map(key => keyNameMap[key] || key);
     shortcutDisplay.innerHTML = pressedKeys.map(key => `<span class="key">${key}</span>`).join('');
@@ -48,13 +49,19 @@ ipcRenderer.on('update-shortcut', (event, data) => {
     const shortcutKey = pressedKeys.join('+').toLowerCase();
     console.log('shortcutKey:', shortcutKey);
     const description = Object.keys(shortcuts).find(key => key.toLowerCase() === shortcutKey);
-    shortcutDescription.textContent = description ? shortcuts[description] : '未知快捷键';
-  
+    
+    // 如果找到描述，显示它；否则清空描述
+    if (description) {
+      shortcutDescription.textContent = shortcuts[description];
+    } else {
+      shortcutDescription.textContent = '';
+    }
   }
 
   // 2秒后清除显示
   setTimeout(() => {
     shortcutDisplay.innerHTML = '';
+    shortcutDescription.textContent = ''; // 同时清空描述
   }, 2000);
 });
 

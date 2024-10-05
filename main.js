@@ -21,6 +21,15 @@ function createWindow() {
 
   mainWindow.loadFile('index.html');
 
+  // 禁用主窗口的默认右键菜单
+  mainWindow.hookWindowMessage(278, function (e) {
+    mainWindow.setEnabled(false);
+    setTimeout(() => {
+      mainWindow.setEnabled(true);
+    }, 100);
+    return true;
+  });
+
   // 创建快捷键显示窗口
   shortcutWindow = new BrowserWindow({
     width: 300,
@@ -32,6 +41,15 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
+  });
+
+  // 禁用快捷键窗口的默认右键菜单
+  shortcutWindow.hookWindowMessage(278, function (e) {
+    shortcutWindow.setEnabled(false);
+    setTimeout(() => {
+      shortcutWindow.setEnabled(true);
+    }, 100);
+    return true;
   });
 
   // 加载快捷键显示页面
