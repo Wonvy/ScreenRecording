@@ -117,11 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
     li.textContent = `${timestamp} ${MouseText} ${data.isMouseDown ? '按下' : '抬起'  }`;  // 设置列表项的文本内容
     keyList.prepend(li);  // 将新的列表项添加到列表的开头
 
-    // 发送鼠标事件信息到子窗口
-    ipcRenderer.send('send-to-child-window', {
-      type: 'mouse-event',
-      data: mouseEventInfo
-    });
 
   });
 

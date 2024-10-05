@@ -76,6 +76,7 @@ ipcMain.on('start-listening', () => {
   if (!mouseListener) {
     console.log('开始监听鼠标事件');
     
+
     // 监听鼠标按下事件
     mouseEvents.on("mousedown", (event) => {
       console.log('mousedown:', event);
@@ -96,7 +97,7 @@ ipcMain.on('start-listening', () => {
 
     // 监听鼠标滚轮事件
     mouseEvents.on("mousewheel", (event) => {
-      // console.log('mousewheel:', event);
+      console.log('mousewheel:', event);
       sendMouseWheelEvent(event);
     });
 
@@ -174,8 +175,9 @@ function sendMouseWheelEvent(e) {
     y: e.y,
     timestamp: new Date().toISOString()
   };
-  console.log('捕获到鼠标滚轮事件:', mouseWheelEvent);
-  mainWindow.webContents.send('mouse-wheel-event', mouseWheelEvent);
+  console.log('mouse-wheel-event:', mouseWheelEvent);
+  // mainWindow.webContents.send('mouse-wheel-event', mouseWheelEvent);
+  shortcutWindow.webContents.send('mouse-wheel-event', mouseWheelEvent); // 直接发送到shortcut窗口
 }
 
 // 注销所有快捷键

@@ -60,3 +60,19 @@ ipcRenderer.on('mouse-event', (event, data) => {
     animateButton(button, data.isMouseDown);
   }
 });
+
+// 监听滚轮事件
+ipcRenderer.on('mouse-wheel-event', (event, data) => {
+  console.log('捕获到滚轮事件:', data);
+  if (data.delta === 1) {
+    animateButton(scrollUp, true);
+    setTimeout(() => animateButton(scrollUp, false), 100);
+    animateButton(scrollWheel, true);
+    setTimeout(() => animateButton(scrollWheel, false), 100);
+  } else if (data.delta === -1) {
+    animateButton(scrollDown, true);
+    setTimeout(() => animateButton(scrollDown, false), 100);
+    animateButton(scrollWheel, true);
+    setTimeout(() => animateButton(scrollWheel, false), 100);
+  }
+});
