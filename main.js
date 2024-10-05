@@ -1,5 +1,4 @@
 const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
-const path = require('path');
 const { GlobalKeyboardListener } = require("node-global-key-listener");
 const mouseEvents = require("global-mouse-events");
 
@@ -8,6 +7,7 @@ let keyboardListener;
 let mouseListener;
 let shortcutWindow;
 
+// 创建主窗口
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
@@ -33,21 +33,8 @@ function createWindow() {
     },
   });
 
+  // 加载快捷键显示页面
   shortcutWindow.loadFile('shortcut.html');
-  
-  // 移除这行，允许鼠标事件
-  // shortcutWindow.setIgnoreMouseEvents(true);
-
-  // 添加全局鼠标事件监听
-  globalShortcut.register('CommandOrControl+Alt+LeftMouseButton', () => {
-    shortcutWindow.webContents.send('mouse-event', { button: 'left', state: 'down' });
-  });
-  globalShortcut.register('CommandOrControl+Alt+RightMouseButton', () => {
-    shortcutWindow.webContents.send('mouse-event', { button: 'right', state: 'down' });
-  });
-  globalShortcut.register('CommandOrControl+Alt+MiddleMouseButton', () => {
-    shortcutWindow.webContents.send('mouse-event', { button: 'middle', state: 'down' });
-  });
 
   // 当主窗口关闭时，关闭所有窗口
   mainWindow.on('closed', () => {
@@ -58,20 +45,24 @@ function createWindow() {
   });
 }
 
+// 当应用程序准备好时，创建一个新的窗口
 app.whenReady().then(createWindow);
 
+// 当所有窗口关闭时，退出应用程序
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
+// 当应用程序激活时，创建一个新的窗口
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   }
 });
 
+// 开始监听
 ipcMain.on('start-listening', () => {
   if (!keyboardListener) {
     console.log('开始监听键盘事件');
@@ -85,48 +76,56 @@ ipcMain.on('start-listening', () => {
   if (!mouseListener) {
     console.log('开始监听鼠标事件');
     
+    // 监听鼠标按下事件
     mouseEvents.on("mousedown", (event) => {
-      console.log('鼠标按下:', event);
+      console.log('mousedown:', event);
       sendMouseEvent(event, true);
     });
 
+    // 监听鼠标释放事件
     mouseEvents.on("mouseup", (event) => {
-      console.log('鼠标释放:', event);
+      console.log('mouseup:', event);
       sendMouseEvent(event, false);
     });
 
+    // 监听鼠标移动事件
     mouseEvents.on("mousemove", (event) => {
-      console.log('鼠标移动:', event);
+      // console.log('mousemove:', event);
       sendMouseMoveEvent(event);
     });
 
+    // 监听鼠标滚轮事件
     mouseEvents.on("mousewheel", (event) => {
-      console.log('鼠标滚轮:', event);
+      // console.log('mousewheel:', event);
       sendMouseWheelEvent(event);
     });
 
-    mouseListener = true;
+    // 设置鼠标监听器为true
+    mouseListener = true; 
   }
 });
 
+// 停止监听
 ipcMain.on('stop-listening', () => {
   if (keyboardListener) {
     console.log('停止监听键盘事件');
-    keyboardListener.kill();
+    keyboardListener.kill(); // 停止监听键盘事件
     keyboardListener = null;
   }
 
   if (mouseListener) {
     console.log('停止监听鼠标事件');
-    mouseEvents.pauseMouseEvents();
+    mouseEvents.pauseMouseEvents(); // 停止监听鼠标事件
     mouseListener = false;
   }
 });
 
+// 发送键盘事件
 ipcMain.on('key-event', (event, data) => {
   shortcutWindow.webContents.send('update-shortcut', data);
 });
 
+// 发送键盘事件
 function sendKeyEvent(e, isKeyDown) {
   const keyEvent = {
     key: e.name,
@@ -141,6 +140,7 @@ function sendKeyEvent(e, isKeyDown) {
   mainWindow.webContents.send('key-event', keyEvent);
 }
 
+// 发送鼠标按键事件
 function sendMouseEvent(e, isMouseDown) {
   const mouseEvent = {
     button: e.button,
@@ -149,20 +149,22 @@ function sendMouseEvent(e, isMouseDown) {
     timestamp: new Date().toISOString(),
     isMouseDown: isMouseDown
   };
-  console.log('捕获到鼠标按键事件:', mouseEvent);
+  // console.log('捕获到鼠标按键事件:', mouseEvent);
   mainWindow.webContents.send('mouse-event', mouseEvent);
 }
 
+// 发送鼠标移动事件
 function sendMouseMoveEvent(e) {
   const mouseMoveEvent = {
     x: e.x,
     y: e.y,
     timestamp: new Date().toISOString()
   };
-  console.log('捕获到鼠标移动事件:', mouseMoveEvent);
+  // console.log('捕获到鼠标移动事件:', mouseMoveEvent);
   mainWindow.webContents.send('mouse-move-event', mouseMoveEvent);
 }
 
+// 发送鼠标滚轮事件
 function sendMouseWheelEvent(e) {
   const mouseWheelEvent = {
     delta: e.delta,
@@ -175,9 +177,7 @@ function sendMouseWheelEvent(e) {
   mainWindow.webContents.send('mouse-wheel-event', mouseWheelEvent);
 }
 
-// 删除 handleKeyPress 和 addToList 函数，它们将被移到渲染进程中
-
+// 注销所有快捷键
 app.on('will-quit', () => {
-  // 注销所有快捷键
   globalShortcut.unregisterAll();
 });
