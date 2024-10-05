@@ -12,6 +12,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 400,
     height: 600,
+    autoHideMenuBar: true,  // 自动隐藏菜单栏
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
