@@ -141,12 +141,32 @@
     #scroll-up.pressed, #scroll-down.pressed {
       background-color: #fff;
     }
+
+    #shortcut-description {
+      font-size: 14px;
+      color: #ffffff;
+      text-align: center;
+      margin-top: 10px;
+      padding: 5px 10px;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    #shortcut-description:empty {
+      display: none;
+    }
   </style>
 </head>
 
 <body>
   <div id="drag-area"></div>
   <div id="shortcut-display"></div>
+  <div id="shortcut-description"></div>
   <div id="mouse-display">
     <div id="mouse-outline">
       <div id="left-button" class="mouse-button"></div>

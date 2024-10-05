@@ -1,5 +1,6 @@
 const { ipcRenderer } = require('electron');
 
+
 document.addEventListener('DOMContentLoaded', () => {
   const keyList = document.getElementById('keyList');
   const startBtn = document.getElementById('startBtn');
@@ -23,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 创建一个集合来存储按下的按键
   const pressedKeys = new Set(); 
-  console.log(pressedKeys);
+  // console.log(pressedKeys);
 
   // 获取按键状态
   function getActionText(isKeyDownObj, key) {
@@ -47,6 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         second: '2-digit',
         fractionalSecondDigits: 3
       }); 
+      
       let keyText = data.key.toUpperCase();  // 将按键名称转换为大写
 
 
