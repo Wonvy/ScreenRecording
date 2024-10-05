@@ -62,7 +62,7 @@
 
     #mouse-outline {
       width: 60px;
-      height: 80px;
+      height: 100px;  /* 增加高度以容纳滚轮上下滑动区域 */
       border: 2px solid #fff;
       border-radius: 24px;
       position: absolute;
@@ -103,17 +103,43 @@
       transition: all 0.1s ease;
     }
 
+    #scroll-up, #scroll-down {
+      width: 10px;
+      height: 10px;
+      background-color: transparent;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #scroll-up {
+      top: -2px;
+    }
+
+    #scroll-down {
+      bottom: -2px;
+    }
+
     .active {
-      background-color: #ff6b6b;
-      box-shadow: 0 0 10px #ff6b6b;
+      background-color: rgba(255, 255, 255, 0.5);
     }
 
-    .clicked {
-      transform: translateX(-50%) scale(0.9);
+    .pressed {
+      background-color: #fff;
+      transform: scale(0.9);
     }
 
-    #scroll-wheel.clicked {
+    .released {
+      transform: scale(1);
+      transition: transform 0.2s ease;
+    }
+
+    #scroll-wheel.pressed {
       transform: translateX(-50%) scale(0.8);
+    }
+
+    #scroll-up.pressed, #scroll-down.pressed {
+      background-color: #fff;
     }
   </style>
 </head>
@@ -126,6 +152,8 @@
       <div id="left-button" class="mouse-button"></div>
       <div id="right-button" class="mouse-button"></div>
       <div id="scroll-wheel"></div>
+      <div id="scroll-up"></div>
+      <div id="scroll-down"></div>
     </div>
   </div>
   <script src="shortcut.js"></script>

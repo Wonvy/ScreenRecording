@@ -151,6 +151,7 @@ function sendMouseEvent(e, isMouseDown) {
   };
   // console.log('捕获到鼠标按键事件:', mouseEvent);
   mainWindow.webContents.send('mouse-event', mouseEvent);
+  shortcutWindow.webContents.send('mouse-event', mouseEvent); // 直接发送到shortcut窗口
 }
 
 // 发送鼠标移动事件
