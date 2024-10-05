@@ -1,6 +1,11 @@
 const { ipcRenderer} = require('electron');
 
 
+// 添加这个新对象来存储按键状态
+const keyStates = {};
+let idCounter = 0;
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const keyList = document.getElementById('keyList');
   const toggleBtn = document.getElementById('toggleBtn');
@@ -50,17 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 监听来自主进程的'key-event'事件
   ipcRenderer.on('key-event', (event, data) => { 
 
-    // 如果keyList元素存在
+    // 如果keyList UI 元素存在
     if (keyList) { 
-      const li = document.createElement('li');  // 创建一个新的列表项元素
-
-      // 使用新的格式化函数
-      const timestamp = formatTimestamp(data.timestamp);
-      
+      const timestamp = formatTimestamp(data.timestamp); // 使用新的格式化函数
       let keyText = data.key.toUpperCase();  // 将按键名称转换为大写
 
-
-      if (data.ctrlKey || data.altKey || data.metaKey || data.shiftKey) {  // 如果有修饰键被按下
+      // 如果有修饰键被按下
+      if (data.ctrlKey || data.altKey || data.metaKey || data.shiftKey) {  
         let combination = [];  // 创建一个数组来存储组合键
         if (data.ctrlKey) combination.push('Ctrl');  // 如果Ctrl键被按下，添加到组合键数组
         if (data.altKey) combination.push('Alt');  // 如果Alt键被按下，添加到组合键数组
@@ -70,28 +71,41 @@ document.addEventListener('DOMContentLoaded', () => {
         keyText = combination.join('+');  // 将组合键数组用'+'连接成字符串
       }
 
-
-      // 获取按键状态
-      const actionText = getActionText(data.isKeyDown, data.key);
+      const actionText = getActionText(data.isKeyDown, data.key); // 获取按键状态
 
       if (actionText === '按下') {
-        // 检查按键是否已经在pressedKeys集合中，避免重复显示
-        if (!pressedKeys.has(keyText)) {
+        if (!keyStates[keyText]) {
+          const id = `key-${idCounter++}`;
+          const li = document.createElement('li');  // 创建一个新的列表项元素
+          li.dataset.key = keyText;
+          li.dataset.startTime = timestamp;
+          li.id = id;
           li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
           keyList.prepend(li);  // 将新的列表项添加到列表的开头
+          keyStates[keyText] = { id, startTime: timestamp };
+          pressedKeys.add(keyText); // 将按键添加到集合中
+          ipcRenderer.send('key-event', pressedKeys); // 发送事件到主进程显示按键图标
+        }
+      } else { 
+
+        const keyState = keyStates[keyText];
+        console.log("keyState即将删除", keyState);
+        if (keyState) {
+          const { id, startTime } = keyState; 
+          const li = document.getElementById(id);
+
+          if (li) {
+            li.textContent = `${startTime} --> ${timestamp}\n${keyText}`;
+            keyList.prepend(li); // 将新的列表项添加到列表的开头
+            delete keyStates[keyText];
+          }
+
+          pressedKeys.delete(keyText); // 从集合中删除按键
         }
 
-        pressedKeys.add(keyText); // 将按键添加到集合中
-        ipcRenderer.send('key-event', pressedKeys); // 发送事件到主进程
-        
-       
-      } else {
-
-        li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
-        keyList.prepend(li);  // 将新的列表项添加到列表的开头
-        pressedKeys.delete(keyText); // 从集合中删除按键
       }
-      console.log(pressedKeys);
+      console.log("keyStates", keyStates);
+      console.log("pressedKeys", pressedKeys);
 
     }
   });
