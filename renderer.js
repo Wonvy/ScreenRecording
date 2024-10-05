@@ -182,5 +182,63 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("mouseStates", mouseStates);
   });
 
+  // 添加导出按钮的事件监听
+  const exportBtn = document.getElementById('exportBtn');
+  exportBtn.addEventListener('click', exportSRT);
+
+  function exportSRT() {
+    console.log('开始导出 SRT');
+    const keyList = document.getElementById('keyList');
+    const items = keyList.getElementsByTagName('li');
+    let srtContent = '';
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      const timeSpan = item.querySelector('.time').textContent;
+      const keySpan = item.querySelector('.key-description').textContent;
+
+      // 解析时间
+      const [startTime, endTime] = timeSpan.split(' --> ');
+      
+      // 添加检查，确保 startTime 和 endTime 都存在
+      if (startTime && endTime) {
+        const startTimeSRT = convertToSRTTime(startTime);
+        const endTimeSRT = convertToSRTTime(endTime);
+
+        // 构建 SRT 格式
+        srtContent += `${i + 1}\n`;
+        srtContent += `${startTimeSRT} --> ${endTimeSRT}\n`;
+        srtContent += `${keySpan}\n\n`;
+      } else {
+        console.warn(`时间格式错误：${timeSpan}`);
+      }
+    }
+
+    console.log('srtContent', srtContent);
+    // 发送消息给主进程，请求保存文件
+    ipcRenderer.send('save-srt', srtContent);
+  }
+
+  // 修改 convertToSRTTime 函数以处理可能的错误
+  function convertToSRTTime(timeString) {
+    const [time, milliseconds] = timeString.split(',');
+    if (!time || !milliseconds) {
+      console.warn(`无效的时间格式：${timeString}`);
+      return '00:00:00,000'; // 返回默认值
+    }
+    
+    const [hours, minutes, seconds] = time.split(':');
+    return `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')},${milliseconds.padStart(3, '0')}`;
+  }
+
+  // 监听保存文件的结果
+  ipcRenderer.on('srt-saved', (event, success) => {
+    if (success) {
+      alert('SRT 文件已成功保存！');
+    } else {
+      alert('保存 SRT 文件时出错。');
+    }
+  });
+
   console.log('渲染进程脚本已加载');
 });

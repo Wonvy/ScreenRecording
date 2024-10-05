@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain, globalShortcut } = require('electron');
+const { app, BrowserWindow, ipcMain, globalShortcut, dialog } = require('electron');
 const { GlobalKeyboardListener } = require("node-global-key-listener");
 const mouseEvents = require("global-mouse-events");
+const fs = require('fs');
 
 let mainWindow;
 let keyboardListener;
@@ -209,6 +210,32 @@ function sendMouseWheelEvent(e) {
   // mainWindow.webContents.send('mouse-wheel-event', mouseWheelEvent);
   shortcutWindow.webContents.send('mouse-wheel-event', mouseWheelEvent); // 直接发送到shortcut窗口
 }
+
+// 收到保存 SRT 请求
+ipcMain.on('save-srt', (event, content) => {
+  
+  dialog.showSaveDialog(mainWindow, {
+    title: '保存 SRT 文件',
+    defaultPath: app.getPath('documents') + '/subtitle.srt',
+    filters: [{ name: 'SRT 文件', extensions: ['srt'] }]
+  }).then(result => {
+    if (!result.canceled && result.filePath) {
+      fs.writeFile(result.filePath, content, (err) => {
+        if (err) {
+          console.error('保存文件时出错:', err);
+          event.reply('srt-saved', false);
+        } else {
+          event.reply('srt-saved', true);
+        }
+      });
+    } else {
+      event.reply('srt-saved', false);
+    }
+  }).catch(err => {
+    console.error('显示保存对话框时出错:', err);
+    event.reply('srt-saved', false);
+  });
+});
 
 
 // 注销所有快捷键

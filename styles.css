@@ -121,3 +121,23 @@ button:hover {
 .icon-button.active .stop-icon {
   display: block;
 }
+
+.export-button-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+#exportBtn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+#exportBtn:hover {
+  background-color: #2980b9;
+}
