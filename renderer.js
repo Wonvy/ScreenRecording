@@ -1,10 +1,11 @@
 const { ipcRenderer} = require('electron');
 
-
 // 添加这个新对象来存储按键状态
 const keyStates = {};
 let idCounter = 0;
 
+// 在文件顶部添加这个新对象来存储鼠标按键状态
+const mouseStates = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   const keyList = document.getElementById('keyList');
@@ -110,36 +111,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-
-
-
   // 监听鼠标事件
   ipcRenderer.on('mouse-event', (event, data) => {
     console.log('捕获到鼠标事件:', data);
-    const li = document.createElement('li');  // 创建一个新的列表项元素
-    let MouseText = '';
+    const timestamp = formatTimestamp(data.timestamp);
+    let mouseText = '';
     switch (data.button) {
       case 1:
-        MouseText = ('左键');
-        console.log('左键');
+        mouseText = '左键';
         break;
       case 2:
-        MouseText = ('右键');
-        console.log('右键');
+        mouseText = '右键';
         break;
       case 3:
-        MouseText = ('滚轮');
-        console.log('滚轮');
+        mouseText = '滚轮';
         break;
     }
 
-    // 使用新的格式化函数
-    const timestamp = formatTimestamp(data.timestamp);
+    const actionText = data.isMouseDown ? '按下' : '抬起';
 
-    li.textContent = `${timestamp} ${MouseText} ${data.isMouseDown ? '按下' : '抬起'  }`;  // 设置列表项的文本内容
-    keyList.prepend(li);  // 将新的列表项添加到列表的开头
+    if (data.isMouseDown) {
+      if (!mouseStates[mouseText]) {
+        const id = `mouse-${idCounter++}`;
+        const li = document.createElement('li');
+        li.dataset.mouseButton = mouseText;
+        li.dataset.startTime = timestamp;
+        li.id = id;
+        li.textContent = `${timestamp} ${mouseText} ${actionText}`;
+        keyList.prepend(li);
+        mouseStates[mouseText] = { id, startTime: timestamp };
+      }
+    } else {
+      const mouseState = mouseStates[mouseText];
+      if (mouseState) {
+        const { id, startTime } = mouseState;
+        const li = document.getElementById(id);
+        if (li) {
+          li.textContent = `${startTime} --> ${timestamp}\n${mouseText}`;
+          keyList.prepend(li);
+        }
+        delete mouseStates[mouseText];
+      }
+    }
 
-
+    console.log("mouseStates", mouseStates);
   });
 
   console.log('渲染进程脚本已加载');
