@@ -76,30 +76,17 @@ ipcMain.on('start-listening', () => {
   if (!mouseListener) {
     console.log('开始监听鼠标事件');
     
-
     // 监听鼠标按下事件
-    mouseEvents.on("mousedown", (event) => {
-      console.log('mousedown:', event);
-      sendMouseEvent(event, true);
-    });
+    mouseEvents.on("mousedown", handleMouseDown);
 
     // 监听鼠标释放事件
-    mouseEvents.on("mouseup", (event) => {
-      console.log('mouseup:', event);
-      sendMouseEvent(event, false);
-    });
+    mouseEvents.on("mouseup", handleMouseUp);
 
     // 监听鼠标移动事件
-    mouseEvents.on("mousemove", (event) => {
-      // console.log('mousemove:', event);
-      sendMouseMoveEvent(event);
-    });
+    mouseEvents.on("mousemove", handleMouseMove);
 
     // 监听鼠标滚轮事件
-    mouseEvents.on("mousewheel", (event) => {
-      console.log('mousewheel:', event);
-      sendMouseWheelEvent(event);
-    });
+    mouseEvents.on("mousewheel", handleMouseWheel);
 
     // 设置鼠标监听器为true
     mouseListener = true; 
@@ -116,10 +103,34 @@ ipcMain.on('stop-listening', () => {
 
   if (mouseListener) {
     console.log('停止监听鼠标事件');
-    mouseEvents.pauseMouseEvents(); // 停止监听鼠标事件
+    mouseEvents.removeListener("mousedown", handleMouseDown);
+    mouseEvents.removeListener("mouseup", handleMouseUp);
+    mouseEvents.removeListener("mousemove", handleMouseMove);
+    mouseEvents.removeListener("mousewheel", handleMouseWheel);
     mouseListener = false;
   }
 });
+
+// 鼠标事件处理函数
+function handleMouseDown(event) {
+  console.log('mousedown:', event);
+  sendMouseEvent(event, true);
+}
+
+function handleMouseUp(event) {
+  console.log('mouseup:', event);
+  sendMouseEvent(event, false);
+}
+
+function handleMouseMove(event) {
+  // console.log('mousemove:', event);
+  sendMouseMoveEvent(event);
+}
+
+function handleMouseWheel(event) {
+  console.log('mousewheel:', event);
+  sendMouseWheelEvent(event);
+}
 
 // 发送键盘事件
 ipcMain.on('key-event', (event, data) => {
