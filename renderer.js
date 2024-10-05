@@ -37,6 +37,16 @@ document.addEventListener('DOMContentLoaded', () => {
     return isKeyDown ? '按下' : '抬起';
   }
 
+  // 添加这个新的辅助函数
+  function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const milliseconds = date.getMilliseconds().toString().padStart(3, '0');
+    return `${hours}:${minutes}:${seconds},${milliseconds}`;
+  }
+
   // 监听来自主进程的'key-event'事件
   ipcRenderer.on('key-event', (event, data) => { 
 
@@ -44,13 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (keyList) { 
       const li = document.createElement('li');  // 创建一个新的列表项元素
 
-      // 将时间戳转换为本地时间字符串，包括毫秒
-      const timestamp = new Date(data.timestamp).toLocaleString('zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        fractionalSecondDigits: 3
-      }); 
+      // 使用新的格式化函数
+      const timestamp = formatTimestamp(data.timestamp);
       
       let keyText = data.key.toUpperCase();  // 将按键名称转换为大写
 
@@ -114,13 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
         break;
     }
 
-    // 将时间戳转换为本地时间字符串，包括毫秒
-    const timestamp = new Date(data.timestamp).toLocaleString('zh-CN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      fractionalSecondDigits: 3
-    }); 
+    // 使用新的格式化函数
+    const timestamp = formatTimestamp(data.timestamp);
 
     li.textContent = `${timestamp} ${MouseText} ${data.isMouseDown ? '按下' : '抬起'  }`;  // 设置列表项的文本内容
     keyList.prepend(li);  // 将新的列表项添加到列表的开头
