@@ -75,6 +75,8 @@ button:hover {
   align-items: center;
   background-color: #4CAF50;
   transition: background-color 0.3s;
+  border: none;
+  cursor: pointer;
 }
 
 .icon-button:hover {
@@ -89,6 +91,10 @@ button:hover {
 
 .icon-button .stop-icon {
   display: none;
+}
+
+.icon-button.active {
+  background-color: #FF0000; /* 红色背景 */
 }
 
 .icon-button.active .play-icon {

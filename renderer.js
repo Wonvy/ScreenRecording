@@ -4,6 +4,7 @@ const { ipcRenderer} = require('electron');
 document.addEventListener('DOMContentLoaded', () => {
   const keyList = document.getElementById('keyList');
   const toggleBtn = document.getElementById('toggleBtn');
+  const titleElement = document.querySelector('.container h1'); // 获取 h1 元素
   let isListening = false;
 
   // 切换监听状态
@@ -14,10 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('开始监听');
         ipcRenderer.send('start-listening');
         toggleBtn.classList.add('active');
+        titleElement.textContent = '正在记录'; // 更新标题文字
       } else {
         console.log('停止监听');
         ipcRenderer.send('stop-listening');
         toggleBtn.classList.remove('active');
+        titleElement.textContent = '开始记录'; // 更新标题文字
       }
     });
   }
