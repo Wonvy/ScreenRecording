@@ -53,6 +53,22 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${hours}:${minutes}:${seconds},${milliseconds}`;
   }
 
+
+  // 在创建新的列表项时使用这个函数
+  function createListItem(timestamp, keyText, actionText) {
+    const li = document.createElement('li');
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'time';
+    timeSpan.textContent = timestamp;
+    const keySpan = document.createElement('span');
+    keySpan.className = 'key-description';
+    keySpan.textContent = `${keyText} ${actionText}`;
+    li.appendChild(timeSpan);
+    li.appendChild(keySpan);
+    return li;
+  }
+
+
   // 监听来自主进程的'key-event'事件
   ipcRenderer.on('key-event', (event, data) => { 
 
@@ -74,30 +90,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const actionText = getActionText(data.isKeyDown, data.key); // 获取按键状态
 
+
       if (actionText === '按下') {
         if (!keyStates[keyText]) {
           const id = `key-${idCounter++}`;
-          const li = document.createElement('li');  // 创建一个新的列表项元素
+          // const li = document.createElement('li');  // 创建一个新的列表项元素
+          const li = createListItem(timestamp, keyText, actionText);
           li.dataset.key = keyText;
           li.dataset.startTime = timestamp;
           li.id = id;
-          li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
+          // li.textContent = `${timestamp} ${keyText} ${actionText}`;  // 设置列表项的文本内容
           keyList.prepend(li);  // 将新的列表项添加到列表的开头
           keyStates[keyText] = { id, startTime: timestamp };
           pressedKeys.add(keyText); // 将按键添加到集合中
           ipcRenderer.send('key-event', pressedKeys); // 发送事件到主进程显示按键图标
         }
       } else { 
-
         const keyState = keyStates[keyText];
-        console.log("keyState即将删除", keyState);
         if (keyState) {
           const { id, startTime } = keyState; 
           const li = document.getElementById(id);
-
           if (li) {
-            li.textContent = `${startTime} --> ${timestamp}\n${keyText}`;
-            keyList.prepend(li); // 将新的列表项添加到列表的开头
+            const timeSpan = li.querySelector('.time');
+            const keySpan = li.querySelector('.key-description');
+            if (timeSpan && keySpan) {
+              timeSpan.textContent = `${startTime} --> ${timestamp}`;
+              keySpan.textContent = keyText;
+            }
+            keyList.prepend(li); // 将列表项移动到列表的开头
             delete keyStates[keyText];
           }
 
@@ -110,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
   });
+
 
   // 监听鼠标事件
   ipcRenderer.on('mouse-event', (event, data) => {
@@ -133,11 +154,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.isMouseDown) {
       if (!mouseStates[mouseText]) {
         const id = `mouse-${idCounter++}`;
-        const li = document.createElement('li');
+        const li = createListItem(timestamp, mouseText, actionText);
         li.dataset.mouseButton = mouseText;
         li.dataset.startTime = timestamp;
         li.id = id;
-        li.textContent = `${timestamp} ${mouseText} ${actionText}`;
         keyList.prepend(li);
         mouseStates[mouseText] = { id, startTime: timestamp };
       }
@@ -147,7 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const { id, startTime } = mouseState;
         const li = document.getElementById(id);
         if (li) {
-          li.textContent = `${startTime} --> ${timestamp}\n${mouseText}`;
+          const timeSpan = li.querySelector('.time');
+          const keySpan = li.querySelector('.key-description');
+          if (timeSpan && keySpan) {
+            timeSpan.textContent = `${startTime} --> ${timestamp}`;
+            keySpan.textContent = mouseText;
+          }
           keyList.prepend(li);
         }
         delete mouseStates[mouseText];
